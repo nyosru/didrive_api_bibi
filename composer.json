@@ -1,0 +1,36 @@
+{
+    "name": "didrive_api/bibi",
+    "description": "api Didrive test - bibi",
+    "version": "0.0.2",
+
+    "keywords": [
+        "didrive",
+        "module",
+        "nyos",
+        "uralweb.info"
+    ],
+    "authors": [
+        {
+            "name": "Sergey Baklanov",
+            "email": "1@php-cat.com",
+            "homepage": "https://php-cat.com",
+            "role": "Developer"
+        }
+    ],
+
+    "homepage": "https://uralweb.info/php/#classes",
+    "license": "MIT",
+    "require": {
+
+        "php": ">=7.3.0"
+        ,
+        "didrive/f": ">=1.1.4"
+    }
+    ,
+    "autoload": {
+        "files": [ 
+            "class.php"
+        ]
+    }
+
+}
