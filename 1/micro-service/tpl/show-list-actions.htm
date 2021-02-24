@@ -1,0 +1,73 @@
+{% spaceless %}
+
+    <style>
+        .butt{ display: inline-block; radius: 5px; padding: 2px 5px; margin: 5px; font-weight: bold; }
+    </style>
+
+    {#<h3 style="background-color:yellow; padding: 2px 5px;" >Записей {{ tels|length }}</h3>#}
+
+    {% if 1 == 1 %}
+        <table class="table table-stripped" >
+
+            <thead>
+                <tr>
+                    {% if request.phone is not defined %}
+                        <th>номер</th>
+                        {% endif %} 
+                    <th>дата время</th>
+                    <th>действие</th>
+                    <th>результат</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {%  if tels|length == 0 %}
+                    <tr>
+                        <td colspan="3" class="bg-warning" >действий не найдено</td>
+                    </tr>
+                {% else %}
+                    {% for tel in tels %}
+                        <tr>
+                            {% if request.phone is not defined %}
+                                <td>{{ tel.phone }} </td>
+                            {% endif %}
+                            <td>{{ tel.add_dt }} </td>
+                            <td>{{ tel.tip }} </td>
+                            <td>
+
+                                {% if tel.result == 'COMPLETE' %} 
+
+                                    <span class="alert alert-success" style="display: inline-block; padding: 2px 5px;" >
+                                        успешно обработан
+                                    </span>
+
+                                {% elseif tel.result == 'ERROR' %} 
+
+                                    {% if tel.error is not empty and tel.error is defined %}
+                                        <span class="alert alert-warning" style="display: inline-block; padding: 2px 5px;" >
+                                            Ошибка: {{ tel.error }}
+                                        </span>
+                                    {% endif %}
+
+                                {% else %}
+
+                                    {{ tel.result }} 
+
+                                {% endif %}
+
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            </tbody>
+        </table>
+    {% endif %}
+
+    {{ pa(tels,2) }}
+    {#{{ pa(tels,2) }}#}
+
+{% endspaceless %}

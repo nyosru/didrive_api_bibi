@@ -7,7 +7,7 @@ ini_set('display_startup_errors', 1);
 if (isset($skip_start) && $skip_start === true) {
     
 } else {
-    require_once '0start.php';
+    require_once '../../../../didrive/base/start-for-microservice.php';
     $skip_start = false;
 }
 
@@ -15,8 +15,13 @@ if (empty($request)) {
     $request = $_REQUEST;
 }
 
+// \f\pa($_POST);
+// \f\pa($_REQUEST);
+// \f\pa($request); die();
+
 if (!isset($request['skip_ob']))
     ob_start('ob_gzhandler');
+
 
 try {
 
@@ -27,44 +32,63 @@ try {
     if (empty($request['phone']))
         throw new \Exception('нет телефона');
 
-    // \f\pa($request);
+    if (empty($request['new_sim']))
+        throw new \Exception('нет симки');
 
-    if (empty(\Nyos\api\Beeline::$token)) {
+    \f\pa($request);
 
-        \Nyos\mod\items::$type_module = 3;
-        \Nyos\mod\items::$search['id'] = $request['ban'];
-        $ee = \Nyos\mod\items::get($db, '701.beeline_dogovors');
-
-        if (empty($ee[0]))
-            throw new \Exception('нет');
-
-        // \f\pa($ee);
-        \Nyos\api\Beeline::getToken($db, $ee[0]['login'], $ee[0]['pass']);
-        // \Nyos\api\Beeline::getToken($db);
-    }
+    \Nyos\api\Beeline::getTokenFromNumber($db, $request['phone']);
 
     $c = new \SoapClient('https://my.beeline.ru/api/SubscriberService?WSDL', array('trace' => false, 'cache_wsdl' => WSDL_CACHE_NONE));
     $opt = [
         'token' => \Nyos\api\Beeline::$token,
         'ctn' => $request['phone'],
-        // 'actvDate' => date('Y-m-d\TH:i:s.000', $_SERVER['REQUEST_TIME']), // 2013-04-26T00:00:00.000<
-        'actvDate' => date('Y-m-d\T00:00:00.000', $_SERVER['REQUEST_TIME']), // 2013-04-26T00:00:00.000<
-        'reasonCode' => $request['reasonCode'],
+        'serialNumber' => $request['new_sim'],
     ];
 
-    // \f\pa($opt);
-    $response = $c->suspendCTN($opt);
+    $response = $c->replaceSIM($opt);
     // \f\pa($response);
-//    if( isset( $response->return ) )
-//        \Nyos\mod\items:: if( isset( $response->return ) );
-//    
-//        $c = new \SoapClient('https://my.beeline.ru/api/SubscriberService?WSDL', array('trace' => false, 'cache_wsdl' => WSDL_CACHE_NONE));
-//        $response = $c->auth(['login' => self::$login, 'password' => self::$pass ]);
-    // \f\pa($response);
-    // \f\pa($c->__getLastRequestHeaders());
-    // \f\pa($c->__getLastRequest());
-    // if (!empty($response->return)) {
-//    
+
+    if (!empty($response->return))
+        $request = $response->return;
+
+    if (!empty($request)) {
+
+        $opt = [
+            'dogovor' => \Nyos\api\Beeline::$dog_id,
+            'phone' => $request['phone'],
+            'tip' => 'Замена сим карты',
+            'tip_eng' => 'replaceSim',
+            'requestid' => $request
+        ];
+        \Nyos\mod\items::add($db, \Nyos\api\Beeline::$mod_request, $opt);
+
+        sleep(5);
+
+        $c = new \SoapClient('https://my.beeline.ru/api/SubscriberService?WSDL', array('trace' => false, 'cache_wsdl' => WSDL_CACHE_NONE));
+        $opt = [
+            'token' => \Nyos\api\Beeline::$token,
+            'login' => \Nyos\api\Beeline::$login,
+            // 'login' => \Nyos\api\Beeline::$ban,
+            'page' => 1,
+            'requestId' => $request,
+        ];
+
+        $response = $c->getRequestList($opt);
+        \f\pa($response);
+
+        if (!empty($response->requestList->requests->requestStatus)) {
+            foreach ($response->requestList->requests as $k => $v) {
+
+                $in[strtolower($k)] = $v;
+            }
+            \Nyos\mod\items::add($db, \Nyos\api\Beeline::$mod_request, $in);
+        }
+    }
+
+
+
+    echo '<b>Номер ' . $request['phone'] . ' перенесён на сим ' . $request['new_sim'] . '</b>';
 
     if (!isset($request['skip_ob'])) {
         $r = ob_get_contents();
@@ -79,9 +103,8 @@ try {
 } catch (\Exception $exc) {
 
     if (!empty($request['return']) && $request['return'] == 'json') {
-        
-        return json_encode([ 'error' => $exc->detail->UssWsApiException->errorDescription, 'other' => $r]);
-        
+
+        return json_encode(['error' => $exc->detail->UssWsApiException->errorDescription, 'other' => $r]);
     } else {
 
         \f\pa($exc);

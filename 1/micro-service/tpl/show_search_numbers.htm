@@ -1,0 +1,99 @@
+{% spaceless %}
+
+    <style>
+        
+        .butt{ display: inline-block; radius: 5px; padding: 2px 5px; margin: 5px; font-weight: bold; }
+
+        .btn-group .btn-noselect{ color: black; border: none; }
+
+        .btn-group .btn-success.btn-noselect{ background-color: rgba(0,255,0,0.05); }
+        .btn-group .btn-success.btn-noselect:HOVER{ background-color: rgba(0,255,0,0.5); }
+
+        .btn-group .btn-info.btn-noselect{ background-color: rgba(0,0,255,0.05); }
+        .btn-group .btn-info.btn-noselect:HOVER{ background-color: rgba(0,0,255,0.5); }
+
+        .btn-group .btn-warning.btn-noselect{ background-color: rgba(255,200,0,0.05); }
+        .btn-group .btn-warning.btn-noselect:HOVER{ background-color: rgba(255,200,0,0.5); }
+
+        .btn-group .btn-danger.btn-noselect{ background-color: rgba(255,0,0,0.05); }
+        .btn-group .btn-danger.btn-noselect:HOVER{ background-color: rgba(255,0,0,0.5); }
+        
+    </style>
+
+    <h3 style="background-color:yellow; padding: 2px 5px;" >Ищем: <u>{{ request.value }}</u> / Найдено телефонов: {{ tels|length }}</h3>
+
+    {# {{ pa(request) }} #}
+
+    <table class="table table-striped table-sm" >
+
+        <thead>
+            <tr>
+                <th>договор</th>
+                <th>номер</th>
+                <th>пополнения (2мес)</th>
+                <th>статус</th>
+                <th>цена (руб)</th>
+                <th>действия</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for tel in tels %}
+
+                {#{% for tel in tels 
+                    if ( request._pays == 'all' or ( request._pays == 'on' and tel.summa > 0 ) or ( request._pays == 'empty' and tel.summa == 0 ) ) 
+                    and ( request._avalible == 'all' or request._avalible == tel.access )
+                %}#}
+                <tr>
+                    <td  >{{ tel.dog }} </td>
+                    <td  >{{ tel.ctn|phone('8rus') }}</td>
+                    <td>{% if tel.summa > 0 %}{{ tel.summa|round(2) }}{% else %}-{% endif %}</td>
+                    <td>{{ tel.phone_status ?? '-' }}</td>
+                    <td>
+                        {#<input type="number" step="1" min="0" name="price" value="{{ tel.price ?? '' }}" class="form-control" />#}
+
+                        <input type="number" min="0" max="9999999" style="padding:4px 6px; min-width: 40px;"
+
+                               class="form-control didrive__items__new_edit3"
+                               value="{{ tel.price }}"
+
+                               {#// или таблица#}
+                               {#aj_table="mod_table"#}
+                               {#aj_s="{{ creatSecret( "mod_table"~v1.id ) }}"#}
+
+                               {#// или модуль ( добавится мод_ )#}
+                               aj_mod="701.beeline_phones"
+                               aj_s="{{ creatSecret( '701.beeline_phones'~tel.id ) }}"
+
+                               aj_id="{{ tel.id }}"
+
+                               var1="id"
+                               var1v="{{ tel.id }}"
+
+                               xvar2="date"
+                               xvar2v="{{ get.date }}"
+
+                               {#// что за поле редактируем#}
+                               var_edit="price"
+
+                               {#// если есть эта запись то только редактируем и не добавляем#}
+                               no_new_save="da"
+
+                               />                         
+
+                        {#{{ pa(tel) }}#}
+
+                    </td>
+                    <td>
+                        {% include '/vendor/didrive_api/bibi/1/micro-service/tpl/show_search_numbers.button.htm' %} 
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    {#{{ pa(tels,2) }}#}
+
+{% endspaceless %}

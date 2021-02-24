@@ -2,55 +2,74 @@
 
 ob_start('ob_gzhandler');
 
-try {
-
 //        throw new \Exception('нет телефона');
 //    $date = $in['date'] ?? $_REQUEST['date'] ?? null;
 //
 //    if (empty($_REQUEST['phone']))
 //        throw new \Exception('нет телефона');
 
-    if (isset($skip_start) && $skip_start === true) {
-        
-    } else {
-        require_once '0start.php';
+if (isset($skip_start) && $skip_start === true) {
+    
+} else {
+    require_once '0start.php';
+}
+
+\f\Cash::$cancel_memcash = true;
+
+try {
+
+
+// получаем токен
+    if (1 == 1) {
+        // \Nyos\mod\items::$search['who_added'] = $_SESSION['now_user_di']['id'];
+        \Nyos\mod\items::$search['id'] = $_REQUEST['ban'];
+        \Nyos\mod\items::$type_module = 3;
+        $dogs = \Nyos\mod\items::get($db, '701.beeline_dogovors');
+
+        // \f\end2('asd',true,$dogs);
+
+        if (!empty($dogs)) {
+            foreach ($dogs as $v) {
+
+                if (empty($v['login']) || empty($v['pass']))
+                    throw new \Exception('что то пошло не так #' . __LINE__ . ', повторите и обратитесь в тех. поддержку', false);
+
+                \Nyos\api\Beeline::$login = trim('A' . $v['login']);
+                \Nyos\api\Beeline::$ban = trim($v['login']);
+                \Nyos\api\Beeline::$pass = trim($v['pass']);
+
+                break;
+            }
+        }
+
+        \Nyos\api\Beeline::getToken($db);
+
+//        if (empty(\Nyos\api\Beeline::$token)){
+//            if (empty(\Nyos\api\Beeline::getToken($db)))
+//                throw new \Exception('нет токена');
+//        }
+
+        // \f\pa(\Nyos\api\Beeline::$token);
+
     }
-    
-    
-    
+
     $return = [
         // сколько добавлено
-        'added' => 0 ,
+        'added' => 0,
         // сколько загружено
         'loaded' => 0
-        ];
+    ];
+
+
     
-    
-    // \f\end2( '12', false);
-    // \f\pa($_REQUEST, '', '', 'request');
-
-    if (empty(\Nyos\api\Beeline::$token)) {
-
-        \Nyos\mod\items::$type_module = 3;
-        \Nyos\mod\items::$search['id'] = $_REQUEST['ban'];
-        $ee = \Nyos\mod\items::get($db, '701.beeline_dogovors');
-
-//        if (empty($ee[0]))
-//            throw new \Exception('нет');
-//
-//        // \f\pa($ee);
-        \Nyos\api\Beeline::getToken($db, $ee[0]['login'], $ee[0]['pass']);
-//        // \Nyos\api\Beeline::getToken($db);
-    }
-
     $c = new \SoapClient('https://my.beeline.ru/api/SubscriberService?WSDL', array('trace' => false, 'cache_wsdl' => WSDL_CACHE_NONE));
     $opt = [
         'token' => \Nyos\api\Beeline::$token,
-        'login' => 'A' . $ee[0]['login'],
+        // 'login' => 'A' . $ee[0]['login'],
+        'login' => \Nyos\api\Beeline::$ban,
         'page' => 1,
             //    'reasonCode' => 'RSBO',
     ];
-
 
     if (!empty($_REQUEST['requestId'])) {
         $opt['requestId'] = $_REQUEST['requestId'];
@@ -78,7 +97,7 @@ try {
     }
 
     $return['loaded'] = sizeof($in_db_new);
-    
+
     // \f\pa($in_db_new,2,'','$in_db_new');
 
     \Nyos\mod\items::$type_module = 3;
@@ -87,30 +106,29 @@ try {
 
     $in2 = [];
 
-    foreach( $in_db_new as $v ){
-        
+    foreach ($in_db_new as $v) {
+
         // echo '<br/>'.$v['requestId'];
         $skip = false;
-        
-        foreach( $res as $v1 ){
-            if(in_array( $v['requestId'] , $v1) ){
+
+        foreach ($res as $v1) {
+            if (in_array($v['requestId'], $v1)) {
                 $skip = true;
                 // echo '<br/>'.__LINE__.' skip';
             }
             // if( isset( $v1['requestId'] ) && $v1['requestId'] == $v['requestId'] )
         }
-        
-        if( $skip === false ){
+
+        if ($skip === false) {
             $in2[] = $v;
         }
-
     }
-    
+
     // \f\pa( $in2, 2 , '' ,'in2' );
-    
-    \Nyos\mod\items::adds( $db, '701.beeline_requests', $in2 );
+
+    \Nyos\mod\items::adds($db, '701.beeline_requests', $in2);
     $return['added'] = sizeof($in2);
-    
+
 //    
 //        $c = new \SoapClient('https://my.beeline.ru/api/SubscriberService?WSDL', array('trace' => false, 'cache_wsdl' => WSDL_CACHE_NONE));
 //        $response = $c->auth(['login' => self::$login, 'password' => self::$pass ]);
@@ -123,11 +141,11 @@ try {
     $r = ob_get_contents();
     ob_end_clean();
 
-    \f\end2( 'загружено '.$return['loaded'].' / добавлено '.$return['added'] . $r, true, $return );
+    \f\end2('загружено ' . $return['loaded'] . ' / добавлено ' . $return['added'] . $r, true, $return);
     // \f\end2('(обработано) номеров в договоре 1', true);
 
-
     if (\Nyos\Nyos::checkSecret($_REQUEST['s'], $_REQUEST['id'])) {
+        
     } else {
         throw new \Exception('что то пошло не так, повторите и обратитесь в тех. поддержку', false);
     }

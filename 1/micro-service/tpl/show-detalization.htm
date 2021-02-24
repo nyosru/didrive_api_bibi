@@ -1,0 +1,49 @@
+{% spaceless %}
+
+    <style>
+        .butt{ display: inline-block; radius: 5px; padding: 2px 5px; margin: 5px; font-weight: bold; }
+    </style>
+
+    {% if error_show|length > 0 %}
+        <div class="alert alert-warning" style="padding: 5px 10px;" >{{ error_show }}</div>
+    {% endif %}
+    
+    {#<h3 style="background-color:yellow; padding: 2px 5px;" >Записей {{ tels|length }}</h3>#}
+
+    {% if 1 == 2 %}
+        <table class="table table-stripped" >
+
+            <thead>
+                <tr>
+                    <th>номер</th>
+                    <th>дата время</th>
+                    <th>действие</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {%  if tels|length == 0 %}
+                    <tr>
+                        <td colspan="3" class="bg-warning" >действий не найдено</td>
+                    </tr>
+                {% else %}
+                    {% for tel in tels %}
+                        <tr>
+                            <td>{{ tel.phone }} </td>
+                            <td>{{ tel.add_dt }} </td>
+                            <td>{{ tel.tip }} </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+
+            </tbody>
+        </table>
+    {% endif %}
+
+    {{ pa(info,2) }}
+    {{ pa(detail,2) }}
+
+    {#{{ pa(tels,2) }}#}
+
+{% endspaceless %}

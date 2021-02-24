@@ -1,0 +1,48 @@
+{% spaceless %}
+
+    <style>
+        .butt{ display: inline-block; radius: 5px; padding: 2px 5px; margin: 5px; font-weight: bold; }
+    </style>
+
+    {#<h3 style="background-color:yellow; padding: 2px 5px;" >Записей {{ tels|length }}</h3>#}
+
+    {% if 1 == 1 %}
+        <table class="table table-stripped" style="margin: 0 auto; max-width: 400px;" >
+
+            <thead>
+                <tr>
+                    {% if request.phone is not defined %}
+                        <th>номер</th>
+                        {% endif %}
+                    <th>дата время</th>
+                    <th>сумма</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {%  if pays|length == 0 %}
+                    <tr>
+                        <td colspan="3" class="bg-warning" >нет записей</td>
+                    </tr>
+                {% else %}
+
+                    {% for p in pays %}
+                        <tr>
+                            {% if request.phone is not defined %}
+                                <td>{{ p.ctn }} </td>
+                            {% endif %}
+                            <td>{{ p.add_dt }} </td>
+                            <td>{{ p.paymentcurrentamt }} </td>
+                        </tr>
+                    {% endfor %}
+
+                {% endif %}
+
+            </tbody>
+        </table>
+    {% endif %}
+
+    {#{{ pa(pays,2) }}#}
+
+{% endspaceless %}

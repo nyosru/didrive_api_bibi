@@ -1,0 +1,79 @@
+{% spaceless %}
+
+    <style>
+        .butt{ display: inline-block; radius: 5px; padding: 2px 5px; margin: 5px; font-weight: bold; }
+    </style>
+
+    {#<h3 style="background-color:yellow; padding: 2px 5px;" >Записей {{ tels|length }}</h3>#}
+
+    <div class="container-fluid" >
+        <div class="row" >
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6" >
+
+                <form action="/vendor/didrive_api/bibi/1/micro-service/send-phone-to-new-sim.php" class="base__send_form_ajax" 
+                      resto_id="res_form"
+                      >
+                    <label>
+                        Телефон
+                        <br/>
+                        <input type="text" name="phone" value="{{ request.phone }}" readonly="" />
+                    </label>
+                    <br/>
+                    <label>
+                        номер новой сим карты ( ICC )
+                        <br/>
+                        <input type="text" name="new_sim" required="" />
+                    </label>
+
+                    <br/>
+                    <br/>
+
+                    <button type="submit" >Привязать сим карту</button>
+
+                </form>
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6" >
+                <div id="res_form" >
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% if 1 == 2 %}
+        <table class="table table-stripped" >
+
+            <thead>
+                <tr>
+                    <th>номер</th>
+                    <th>дата время</th>
+                    <th>сумма</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {%  if pays|length == 0 %}
+                    <tr>
+                        <td colspan="3" class="bg-warning" >нет записей</td>
+                    </tr>
+                {% else %}
+
+                    {% for p in pays %}
+                        <tr>
+                            <td>{{ p.ctn }} </td>
+                            <td>{{ p.add_dt }} </td>
+                            <td>{{ p.paymentcurrentamt }} </td>
+                        </tr>
+                    {% endfor %}
+
+                {% endif %}
+
+            </tbody>
+        </table>
+    {% endif %}
+
+    {#{{ pa(pays,2) }}#}
+
+{% endspaceless %}

@@ -1,0 +1,351 @@
+{% spaceless %}
+
+    <a href="#" class="btn btn-xs" style="margin: 3px; background-color: rgba(0,255,0,0.2);" onclick=" /*$(this).hide();*/
+            $('#p2hone{{ tel.ctn }}').toggle('slow');
+            return false;" >норм кнопочки</a>
+
+    <span id="p2hone{{ tel.ctn }}" style="display:none;" >
+
+        {# расчёты #}
+        {% if 1 == 1 %}
+            <button
+
+                class="base_modal_go butt" 
+                modal_header="платежи № {{ tel.ctn|phone('8rus') }}"
+
+                ajax_link="/vendor/didrive_api/bibi/1/micro-service/showPays.php"
+                ajax_vars="phone={{ tel.ctn }}&s={{ creatSecret(tel.ctn) }}"
+
+                data-toggle="modal" data-backdrop="static" data-target="#di_modal"
+
+                {# если есть то перезагружаем страницу #}
+                xreload_page_after_ok="xx"
+
+                {# спрашиваем при старте #}
+                {#xget_answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"#}
+
+                {# если нужен второй запрос после первого #}               
+                xajax2_link=""
+                xajax2_vars=""
+
+                ><span class="fa fa-money" ></span> Платежи</button>
+
+        {% endif %}
+
+        <button
+
+            class="base_modal_go butt" 
+            modal_header="Перенос номера {{ tel.ctn|phone('8rus') }} на новую СИМ карту"
+
+            ajax_link="/vendor/didrive_api/bibi/1/micro-service/showFormMoveSim.php"
+            ajax_vars="phone={{ tel.ctn }}&s={{ creatSecret(tel.ctn) }}"
+
+            data-toggle="modal" data-backdrop="static" data-target="#di_modal"
+
+            {# если есть то перезагружаем страницу #}
+            xreload_page_after_ok="xx"
+
+            {# спрашиваем при старте #}
+            {#xget_answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"#}
+
+            {# если нужен второй запрос после первого #}               
+            xajax2_link=""
+            xajax2_vars=""
+
+            ><span class="fa fa-rocket" ></span> Переноc номера на SIM карту</button>
+
+
+
+        {%  if tel.access_block == 'da' %}
+            <button 
+
+                class="base__send_to_ajax xbase_modal_go butt" 
+                title="Блокировать"
+                style="color:rgba(255,0,0,0.8);"
+
+                res_to_id='stat{{ tel.ctn }}'
+                href_to_ajax='/vendor/didrive_mod/bibi/1/didrive/micro-service/ajax-send.php'
+                phone="{{ tel.ctn }}"
+                s="{{ creatSecret( 'block'~tel.ctn ) }}"
+
+                {# спрашиваем при старте #}
+                answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"
+
+                {# блокировка #}
+                request_type="suspendCTN"
+                reasonCode="S1B"
+
+                ><span class="fa xfa-2x fa-unlock" ></span> Блокировать (по сохранению полная)</button>
+        {%  endif %}
+
+        {%  if tel.access_block == 'da' %}
+            <button 
+
+                class="base__send_to_ajax xbase_modal_go butt" 
+                title="РазБлокировать"
+                style="color:rgba(0,255,0,0.8);"
+
+                res_to_id='stat{{ tel.ctn }}'
+                href_to_ajax='/vendor/didrive_mod/bibi/1/didrive/micro-service/ajax-send.php'
+                phone="{{ tel.ctn }}"
+                s="{{ creatSecret( 'block'~tel.ctn ) }}"
+
+                {# спрашиваем при старте #}
+                answer="разблокировать номер {{ tel.ctn|phone('8rus') }} ?"
+
+                {# блокировка #}
+                {#request_type="suspendCTN"#}
+                {#reasonCode="S1B"#}
+
+                {# раз блокировка #}
+                request_type="restoreCTN"
+                reasonCode="RSBO"
+
+                ><span class="fa xfa-2x fa-unlock" ></span> РазБлокировать</button>
+        {%  endif %}
+
+
+        <br/>
+
+        <button type="button" 
+                class="butt base__send_to_ajax " 
+                res_to_id='stat{{ tel.ctn }}'
+                href_to_ajax='/vendor/didrive_api/bibi/1/micro-service/api-getCTNInfoList.php'
+                {#xphone="{{ tel.ctn }}"#}
+                ban="{{ tel.dog_login }}"
+                s="{{ creatSecret( tel.dog_login ~ tel.ctn ) }}"
+                {#title="{{ ac._txt }}"#}
+                {#new_status="{{ ac._access }}"#}
+                >обновить инфу по номерам на договоре</button> 
+        <small> грузим инфу по номерам, если есть изменения сохраняем в базе и присылает оповещение на телеграм </small>
+
+        <br/>
+
+        <button type="button" 
+
+                class="btn btn-sm btn-info butt base__send_to_ajax " 
+
+                res_to_id='stat{{ tel.ctn }}'
+                href_to_ajax='/vendor/didrive_api/bibi/1/micro-service/api-getCTNInfoList.php'
+
+                phone="{{ tel.ctn }}"
+                ban="{{ tel.dog_login }}"
+                s="{{ creatSecret( tel.dog_login ~ tel.ctn ) }}"
+
+                {#title="{{ ac._txt }}"#}
+                {#new_status="{{ ac._access }}"#}
+
+                >Инфа по номеру</button> 
+
+
+        <br clear="all" />
+    </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="#" class="btn btn-xs btn-light" style="margin: 3px;" onclick=" /*$(this).hide();*/
+            $('#phone{{ tel.ctn }}').toggle('slow');
+            return false;" >показать кнопочки (бета версии)</a>
+
+    <span id="phone{{ tel.ctn }}" style="display:none;" >
+
+        <button
+
+            class="base_modal_go butt" 
+            modal_header="история действий № {{ tel.ctn|phone('8rus') }}"
+
+            ajax_link="/vendor/didrive_api/bibi/1/micro-service/showListActions.php"
+            ajax_vars="phone={{ tel.ctn }}&s={{ creatSecret(tel.ctn) }}"
+
+            data-toggle="modal" data-backdrop="static" data-target="#di_modal"
+
+            {# если есть то перезагружаем страницу #}
+            xreload_page_after_ok="xx"
+
+            {# спрашиваем при старте #}
+            {#xget_answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"#}
+
+            {# если нужен второй запрос после первого #}               
+            xajax2_link=""
+            xajax2_vars=""
+
+            ><span class="fa fa-folder-open" ></span> лог действий</button>
+
+        {# детализация #}
+        {% if 1 == 1 %}
+            <button
+
+                class="base_modal_go butt" 
+                modal_header="детализация № {{ tel.ctn|phone('8rus') }}"
+
+                ajax_link="/vendor/didrive_api/bibi/1/micro-service/showDetalization.php"
+                ajax_vars="phone={{ tel.ctn }}&s={{ creatSecret(tel.ctn) }}"
+
+                data-toggle="modal" data-backdrop="static" data-target="#di_modal"
+
+                {# если есть то перезагружаем страницу #}
+                xreload_page_after_ok="xx"
+
+                {# спрашиваем при старте #}
+                {#xget_answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"#}
+
+                {# если нужен второй запрос после первого #}               
+                xajax2_link=""
+                xajax2_vars=""
+
+                ><span class="fa fa-database" ></span> детализация</button>
+        {% endif %}       
+
+
+
+
+
+
+        {% if 1 == 2 %}
+            <button
+
+                class="base_modal_go butt" 
+                modal_header="Перенос номера {{ tel.ctn|phone('8rus') }} на новую СИМ карту"
+
+                ajax_link="/vendor/didrive_api/bibi/1/micro-service/showFormMoveSim.php"
+                ajax_vars="phone={{ tel.ctn }}&s={{ creatSecret(tel.ctn) }}"
+
+                data-toggle="modal" data-backdrop="static" data-target="#di_modal"
+
+                {# если есть то перезагружаем страницу #}
+                xreload_page_after_ok="xx"
+
+                {# спрашиваем при старте #}
+                {#xget_answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"#}
+
+                {# если нужен второй запрос после первого #}               
+                xajax2_link=""
+                xajax2_vars=""
+
+                ><span class="fa fa-rocket" ></span> Какая текущая симкарта</button>
+        {% endif %}
+
+
+        <button type="button" 
+
+                class="butt base__send_to_ajax " 
+
+                res_to_id='stat{{ tel.ctn }}'
+                href_to_ajax='/vendor/didrive_api/bibi/1/micro-service/api-what-sim-on-phone.php'
+
+                phone="{{ tel.ctn }}"
+                s="{{ creatSecret( 'what-sim' ~ tel.ctn ) }}"
+
+                {#title="{{ ac._txt }}"#}
+                {#new_status="{{ ac._access }}"#}
+
+                >Какая СИМ карта</button> 
+
+        {#{{ pa(tel) }}#}
+
+        <button type="button" 
+
+                class="butt base__send_to_ajax " 
+
+                res_to_id='stat{{ tel.ctn }}'
+                href_to_ajax='/vendor/didrive_api/bibi/1/micro-service/api-what-sim-on-phone.php'
+
+                xphone="{{ tel.ctn }}"
+                ban="{{ tel.dog_login }}"
+                s="{{ creatSecret( 'what-sim' ~ tel.dog_login ) }}"
+
+                {#title="{{ ac._txt }}"#}
+                {#new_status="{{ ac._access }}"#}
+
+                >Какие СИМ карты на договоре</button> 
+
+
+
+
+
+
+
+
+
+        <button
+
+            class="base_modal_go butt" 
+            modal_header="Перенос номера {{ tel.ctn|phone('8rus') }} на новую СИМ карту"
+
+            ajax_link="/vendor/didrive_api/bibi/1/micro-service/api-form-replaceSim.php"
+            ajax_vars="phone={{ tel.ctn }}&s={{ creatSecret(tel.ctn) }}"
+
+            data-toggle="modal" data-backdrop="static" data-target="#di_modal"
+
+            {# если есть то перезагружаем страницу #}
+            xreload_page_after_ok="xx"
+
+            {# спрашиваем при старте #}
+            {#xget_answer="заблокировать номер {{ tel.ctn|phone('8rus') }} ?"#}
+
+            {# если нужен второй запрос после первого #}               
+            xajax2_link=""
+            xajax2_vars=""
+
+            ><span class="fa fa-rocket" ></span> назначить новый тариф</button>
+
+
+
+
+    </span>
+
+    {#{{  pa(tel) }}#}
+
+    <div id='stat{{ tel.ctn }}'></div>
+
+    {#{{ tel.access }}#}
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+
+        <button type="button" class="btn btn-xs btn-light"  disabled="" >для регистрации:</button> 
+
+        {% set g_tel = tel.ctn %}
+        {#{{ tel.access }}#}
+
+        {% for ac in gsm_accesses %}
+
+            <button type="button" 
+
+                    class="btn btn-xs {{ ac._class }} 
+                    {% if tel.access == ac._access %}{% else %}btn-noselect{% endif %} 
+                    base__send_to_ajax " 
+
+                    res_to_id='stat{{ g_tel }}'
+                    href_to_ajax='/vendor/didrive_mod/bibi/1/didrive/micro-service/edit-phone-reg-status.php'
+                    phone="{{ g_tel }}"
+                    s="{{ creatSecret( 'edit_reg' ~ g_tel ) }}"
+                    title="{{ ac._txt }}"
+                    new_status="{{ ac._access }}"
+
+                    >{{ ac._txt }}</button> 
+
+        {% endfor %}
+
+
+
+    </div>
+
+{% endspaceless %}
